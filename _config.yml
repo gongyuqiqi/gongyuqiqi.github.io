@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: gyq's blog
 subtitle: ''
 description: ''
 keywords:
-author: John Doe
+author: gongyuqiqi
 language: en
 timezone: ''
 
@@ -103,4 +103,7 @@ theme: landscape
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+  repo:
+    github: git@github.com:gongyuqiqi/gongyuqiqi.github.io.git
+  branch: public
