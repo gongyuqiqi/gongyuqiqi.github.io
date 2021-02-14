@@ -4,9 +4,12 @@ date: 2020-02-01 16:30:23
 tags: notes
 ---
 
+基础教程，随便写写
+
 <!--more-->
 
 # Markdown学习教程  
+
 ![](https://ftp.bmp.ovh/imgs/2020/02/993e8d3010da3e06.jpg)  
 >Markdown语言在2004年由John Gruber创建，是以一种轻量级标记语言，它允许人们使用易读写的纯文本格式编写文档。Markdown编写的文档可以导出HTML、Word、PDF、Epub等多种格式的文档，编写的文档后缀为`.md`，`.markdown`。       
 

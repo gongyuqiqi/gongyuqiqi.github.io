@@ -1,12 +1,15 @@
 ---
-title: ATAT-seq Analysis
+title: ATAC-seq Analysis
 date: 2020-02-08 16:30:23
 tags: NGS
 ---
 
-<!--more--> 
+ATAC-seq旧版处理流程
 
-# ATAT-seq Analysis
+<!--more-->
+
+# ATAC-seq Analysis
+
 
 表观测序数据中比较重要的就是ATAC-seq、Chip-seq。这两者的原理和分析过程类似。
 具体的异同详见此链接：https://www.jianshu.com/p/87bc2002e82c
@@ -14,7 +17,7 @@ tags: NGS
 
 ## (一)数据下载
 
-<font color=red>数据下载是我走过的最曲折</font>
+<font color=red>数据下载是我走过的最曲折的路</font>
 
 强烈不推荐wget、curl——需要向上天再借500年才能等的起。
 

@@ -1,8 +1,10 @@
 ---
-title: SUPPA2
+title: 可变剪切之SUPPA2
 date: 2021-01-23 16:30:27
 tags: NGS
 ---
+
+RNA-seq高级分析之可变剪切
 
 <!--more-->
 

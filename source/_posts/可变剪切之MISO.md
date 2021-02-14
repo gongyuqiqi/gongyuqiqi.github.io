@@ -1,13 +1,15 @@
 ---
-title: MISO
+title: 可变剪切分析之MISO
 date: 2021-01-09 14:05:52
 tags: NGS
 ---
 
+RNA-seq高级分析之可变剪切
+
 <!--more-->
 
-
 # 可变剪切分析之MISO
+
 MISO软件原文档：https://miso.readthedocs.io/en/fastmiso/index.html#installing-fastmiso
 ## 数据下载
 

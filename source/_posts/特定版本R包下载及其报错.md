@@ -5,9 +5,9 @@ tags: R
 ---
 
 Error: Failed to install 'unknown package' from URL:  
-(converted from warning) installation of package ‘dtw’ had non-zero exit status   
+(converted from warning) installation of package ‘dtw’ had non-zero exit status
 
-<!--more--> 
+<!--more-->
 
 # 特定版本R包下载及其报错  
 
@@ -114,13 +114,3 @@ sessionInfo()
 ```
 
 <img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/seuratinfo.JPG"/>
-
-
-
-
-
-
-
-
-
-

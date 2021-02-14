@@ -4,6 +4,8 @@ date: 2020-12-08 13:53:55
 tags: NGS
 ---
 
+ATAC-seq最新处理流程
+
 <!--more-->
 
 # **2020 ATAC-seq analysis**

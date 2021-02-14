@@ -1,6 +1,6 @@
 ---
 title: MySQL简单介绍
-date: 2020-02-25
+date: 2020-02-25 16:30:23
 tags: MySQL
 ---
 

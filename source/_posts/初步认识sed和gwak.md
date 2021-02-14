@@ -4,6 +4,7 @@ date: 2020-03-07 14:31:16
 tags: Linux
 ---
 想在shell脚本中处理任何类型的数据，就要熟悉Linux中的sed和gawk工具。Linux世界中广泛使用的两个命令行编辑器：sed和gawk
+
 <!--more-->
 
 # sed编辑器

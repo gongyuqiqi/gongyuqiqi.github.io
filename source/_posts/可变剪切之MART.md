@@ -1,8 +1,10 @@
 ---
-title: rMART
+title: 可变剪切之rMART
 date: 2021-01-14 11:05:01
 tags: NGS
 ---
+
+RNA-seq高级分析之可变剪切
 
 <!--more-->
 
