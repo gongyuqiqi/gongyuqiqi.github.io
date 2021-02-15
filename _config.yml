@@ -122,4 +122,5 @@ deploy:
   type: git
   repo:
     github: git@github.com:gongyuqiqi/gongyuqiqi.github.io.git
+    coding: git@e.coding.net:Coding_Spirit/gyqgyq.git
   branch: public
