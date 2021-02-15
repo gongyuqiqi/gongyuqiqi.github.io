@@ -1,5 +1,9 @@
 ---
 title: {{ title }}
 date: {{ date }}
-tags:
+tags: tag1
 ---
+
+<!--more-->
+
+## ch1
