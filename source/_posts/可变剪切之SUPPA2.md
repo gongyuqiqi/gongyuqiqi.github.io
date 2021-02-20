@@ -40,7 +40,7 @@ salmon index -t hg19_EnsenmblGenes_sequence_ensenmbl.fasta -i Ensembl_hg19_salmo
 ### 2、定量获得TPM值
 
 **(1)、运行salmon软件定量**
-```
+```bash
 x=_1
 y=_2
 for id in {SRR1513329,SRR1513330,SRR1513331,SRR1513332,SRR1513333,SRR1513334}
