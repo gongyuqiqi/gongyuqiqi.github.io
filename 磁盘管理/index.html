@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>磁盘管理 （分区、格式化、挂载、卸载） - Gong Yuqi&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Gong Yuqi&#039;s blog"><meta name="msapplication-TileImage" content="/img/ava.jpg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gong Yuqi&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="磁盘管理（基础篇）"><meta property="og:type" content="blog"><meta property="og:title" content="磁盘管理 （分区、格式化、挂载、卸载）"><meta property="og:url" content="http://gyqgyq.com/%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86/"><meta property="og:site_name" content="Gong Yuqi&#039;s blog"><meta property="og:description" content="磁盘管理（基础篇）"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/磁盘结构.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/MBR.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/磁盘分区.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/diskpartition.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/fdiskresult.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdb1.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdb2.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdb3.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdbfinal.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ext4.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/xfs.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ext3.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/swap.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/mount_l1.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/mount_l2.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/mount_l2_1.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/freem3.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/automountresult.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/uuid1.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/uuid2.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/uuid3.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/freem2.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/dfTh.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/duh.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/dush.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/deletepartition.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/deletedevsdbinfo.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/permanentlydelete.JPG"><meta property="article:published_time" content="2020-02-08T08:30:23.000Z"><meta property="article:modified_time" content="2022-11-26T06:08:08.861Z"><meta property="article:author" content="Gong Yuqi"><meta property="article:tag" content="Linux"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/磁盘结构.JPG"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://gyqgyq.com/%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86/"},"headline":"磁盘管理 （分区、格式化、挂载、卸载）","image":[],"datePublished":"2020-02-08T08:30:23.000Z","dateModified":"2022-11-26T06:08:08.861Z","author":{"@type":"Person","name":"Gong Yuqi"},"publisher":{"@type":"Organization","name":"Gong Yuqi's blog","logo":{"@type":"ImageObject","url":"http://gyqgyq.com/img/ava.jpg"}},"description":"磁盘管理（基础篇）"}</script><link rel="canonical" href="http://gyqgyq.com/%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86/"><link rel="icon" href="/img/ava.jpg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/ava.jpg" alt="Gong Yuqi&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/gongyuqiqi/gongyuqiqi.github.io"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2020-02-08T08:30:23.000Z" title="2/8/2020, 4:30:23 PM">2020-02-08</time></span><span class="level-item">Updated&nbsp;<time dateTime="2022-11-26T06:08:08.861Z" title="11/26/2022, 2:08:08 PM">2022-11-26</time></span><span class="level-item">17 minutes read (About 2622 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><h1 class="title is-3 is-size-4-mobile">磁盘管理 （分区、格式化、挂载、卸载）</h1><div class="content"><p>磁盘管理（基础篇）</p>
+<span id="more"></span>
+
+<h1 id="磁盘管理-（分区、格式化、挂载、卸载）"><a href="#磁盘管理-（分区、格式化、挂载、卸载）" class="headerlink" title="磁盘管理 （分区、格式化、挂载、卸载）"></a>磁盘管理 （分区、格式化、挂载、卸载）</h1><h2 id="磁盘结构"><a href="#磁盘结构" class="headerlink" title="磁盘结构"></a>磁盘结构</h2><img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/磁盘结构.JPG"/>  
+
+<ul>
+<li>磁盘的0磁道0柱面1扇区存储的是MBR（主引导记录）信息，位于最外圈。    </li>
+<li>MBR共512个字节，446的主引导程序+64的分区表+2的魔数（分区结束符）组成。<br>一个分区占16个字节，64个字节的分区表，所以主分区和扩展分区加起来不能超过4个。</li>
+</ul>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/MBR.JPG"/>
+  
+<h2 id="磁盘表示"><a href="#磁盘表示" class="headerlink" title="磁盘表示"></a>磁盘表示</h2><ul>
+<li>&#x2F;dev&#x2F;sda1<br>&#x2F;dev 设备文件目录<br>sd：sata,sas,usb,scsi接口硬盘    hd：代表IDE接口的硬盘<br>a：linux用字母表示第几块磁盘，a代表第一块<br>1：linux用数字表示某块磁盘的第几个分区</li>
+</ul>
+<h2 id="磁盘使用概述"><a href="#磁盘使用概述" class="headerlink" title="磁盘使用概述"></a>磁盘使用概述</h2><ul>
+<li>磁盘初始化<br>MBR OR GPT  </li>
+<li>磁盘分区<br>一个磁盘只能分4个分区：主分区+扩展分区&lt;&#x3D;4  </li>
+<li>格式化<br>文件系统主要负责数据如何存储在硬盘上  </li>
+<li>磁盘挂载<br>设备必须经过挂在才可以使用</li>
+</ul>
+<p><strong>分区介绍</strong><br>计算机中存放信息的主要的存储设备就是硬盘，但是硬盘不能直接使用，必须对硬盘进行分割，分割成一块一块的硬盘区域就是磁盘分区。传统的磁盘管理中，将一个硬盘分为两大类分区：主分区和扩展分区。主分区是能够安装操作系统，能够进行计算机启动的分区，这样的分区可以直接格式化，然后安装操作系统，直接存放文件。扩展分区无法直接使用，必须在扩展分区中再次划分逻辑驱动器，才可以经过格式化后存放数据。  </p>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/磁盘分区.JPG"/>   
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/diskpartition.JPG"/>
+
+
+<p><strong>fdisk分区命令</strong><br>linux fdisk是一个创建和维护分区表的程序，它兼容DOS类型的分区表、BSD或者SUN类型的磁盘列表。<br>语法：fdisk [命令选项][参数]<br>必要选项：-l 列出所有分区表<br>参数：可以是指定的磁盘，如果不指定，默认列出所有磁盘<br><img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/fdiskresult.JPG"/></p>
+<ul>
+<li>一共3块磁盘：&#x2F;dev&#x2F;sda、&#x2F;dev&#x2F;sdb、&#x2F;dev&#x2F;sdc  </li>
+<li>&#x2F;dev&#x2F;sda这块磁盘进行了分区，带<code>*</code>的分区&#x2F;dev&#x2F;sda1表示系统启动盘。Id：83表示linux的基本分区，Id：8e表示linux的逻辑卷分区。System:Extended表示扩展分区。System:Linux LVM表示逻辑卷分区。  </li>
+<li>&#x2F;dev&#x2F;sdb、&#x2F;dev&#x2F;sdc这两块盘并没有进行磁盘分区。  </li>
+<li>&#x2F;dev&#x2F;mapper&#x2F;centos-root为卷组。</li>
+<li>&#x2F;dev&#x2F;mapper&#x2F;centos-swap为交换分区。</li>
+</ul>
+<p><font color=blue>主分区可以直接格式化存数据，扩展分区要划逻辑驱动器，对逻辑驱动器进行格式化后才能存数据。</font></p>
+<h2 id="磁盘分区"><a href="#磁盘分区" class="headerlink" title="磁盘分区"></a>磁盘分区</h2><p><strong>练习</strong>  </p>
+<ul>
+<li>分一个主分区  </li>
+<li>分一个扩展分区，并分两个逻辑驱动器  </li>
+<li>分一个交换分区</li>
+</ul>
+<ol>
+<li>添加一个主分区（500M）。</li>
+<li>添加一个扩展分区（剩下所有的空间）。此时再想添加一个主分区，就会发现扇区不够了。</li>
+<li>SWAP（交换）分区是一种通过在硬盘中预先划分一定的空间，然后将把内存中暂时不常用的数据临时存放到硬盘中，以便腾出物理内存空间让更活跃的程序服务来使用的技术，其设计目的是为了解决真实物理内存不足的问题。但由于交换分区毕竟是通过硬盘设备读写数据的，速度肯定要比物理内存慢，所以只有当真实的物理内存耗尽后才会调用交换分区的资源。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk /dev/sdb</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdb1.JPG"/>  
+
+<ol>
+<li>添加两个逻辑驱动器 &#x2F;dev&#x2F;sdb5  &#x2F;dev&#x2F;sdb6 各分500M空间</li>
+</ol>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdb2.JPG"/>
+
+<ol start="3">
+<li>添加一个交换分区</li>
+</ol>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdb3.JPG"/>
+
+<ol start="4">
+<li>查看&#x2F;dev&#x2F;sdb磁盘分区结果</li>
+</ol>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/devsdbfinal.JPG"/>
+
+<h2 id="磁盘格式化"><a href="#磁盘格式化" class="headerlink" title="磁盘格式化"></a>磁盘格式化</h2><p><strong>格式化</strong>  </p>
+<ul>
+<li>格式化是指对磁盘或磁盘中的分区进行初始化的一种操作，这种操作通常会导致现有的磁盘或分区中所有的文件被清楚。<br>格式化就相当于给磁盘装一个大管家，这位大管家负责数据怎么在硬盘中读入读出。但是这位大管家在接管这块硬盘的时候会一股脑清除里面原来的东西，接着再按照自己的方式管理这块磁盘。  </li>
+<li>格式化通常分为低级格式化和高级格式化。如果没有特别指明，对硬盘的格式化通常是指高级格式化。</li>
+</ul>
+<p><strong>文件系统</strong>  </p>
+<ul>
+<li>文件系统：负责管理和存储数据的系统<br>数据是以什么方式存在于硬盘，又是以什么方式读出的。  </li>
+<li>文件系统类型<br>ext2、ext3、ext4、xfs</li>
+</ul>
+<p><strong>mkfs</strong><br>mkfs [options] device<br>命令选项<br>-t：指定文件系统类型</p>
+<p><strong>练习</strong>  </p>
+<ul>
+<li>主分区<font color=blue>格式化为ext4</font>  </li>
+<li>两个逻辑分区分别<font color=blue>格式化为xfs、ext3</font>  </li>
+<li><font color=blue>交换分区的格式化</font></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将/dev/sdb1主分区格式化为ext4文件系统</span></span><br><span class="line">mkfs -t ext4 /dev/sdb1</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ext4.JPG"/>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将/dev/sdb5逻辑分区格式化为xfs文件系统 </span></span><br><span class="line">mkfs -t xfs /dev/sdb5</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/xfs.JPG"/>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将/dev/sdb6逻辑分区格式化为ext3文件系统</span></span><br><span class="line">mkfs -t ext3 /dev/sdb6</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ext3.JPG"/>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将/dev/sdb7交换分区格式化</span></span><br><span class="line">mkswap /dev/sdb7</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/swap.JPG"/>
+
+<h2 id="磁盘挂载"><a href="#磁盘挂载" class="headerlink" title="磁盘挂载"></a>磁盘挂载</h2><p><strong>挂载</strong>  </p>
+<ul>
+<li>linux中的所有设备必须经过挂载才可以被用户使用</li>
+<li>挂载的方式其实是将某个设备挂到文件系统的某个文件夹</li>
+</ul>
+<p><strong>mount</strong>  </p>
+<ul>
+<li>命令语法<br>mount device directory </li>
+<li>命令选项<br>-a：挂载所有文件系统，参考文件&#x2F;etc&#x2F;fstab<br>-l：显示当前挂载<br>-t：文件系统类型<br>-o：指定挂载权限</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看当前系统的挂载信息，发现并没有/dev/sdb相关的挂载信息</span></span><br><span class="line">mount -l</span><br></pre></td></tr></table></figure>
+
+<p><strong>手动挂载&#x2F;dev&#x2F;sdb1、&#x2F;dev&#x2F;sdb5、&#x2F;dev&#x2F;sdb6</strong><br><font color=blue>系统重启后，手动挂载方式挂载的分区不会生效</font></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> /opt/sdb1</span><br><span class="line"><span class="built_in">mkdir</span> /opt/sdb5</span><br><span class="line"><span class="built_in">mkdir</span> /opt/sdb6</span><br><span class="line">mount /dev/sdb1 /opt/sdb1 <span class="comment">#mount -t ext4 /dev/sdb1 /opt/sdb1</span></span><br><span class="line">mount /dev/sdb5 /opt/sdb5 <span class="comment">#mount -t xfs /dev/sdb5 /opt/sdb5</span></span><br><span class="line">mount /dev/sdb6 /opt/sdb6 <span class="comment">#mount -t ext3 /dev/sdb6 /opt/sdb6</span></span><br><span class="line"><span class="comment">#不使用-t参数指定文件系统类型，系统也会自动识别文件系统类型</span></span><br><span class="line"><span class="comment">#查看当前系统挂载信息，发现多出了/dev/sdb相关信息</span></span><br><span class="line">mount -l</span><br></pre></td></tr></table></figure>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/mount_l1.JPG"/>
+
+<p><strong>umount</strong>  </p>
+<ul>
+<li>umount：卸载文件系统  </li>
+<li>umount 设备挂载点|设备源<br>-l 加上<code>-l</code>参数进行卸载即——在该设备处于使用中是不进行卸载，在该设备处于空闲时进行卸载</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#卸载3个挂载点</span></span><br><span class="line">umount /dev/sdb1 <span class="comment">#umount /opt/sdb1</span></span><br><span class="line">umount /dev/sdb5 <span class="comment">#umount /opt/sdb5</span></span><br><span class="line">umount /dev/sdb6 <span class="comment">#umount /opt/sdb6</span></span><br><span class="line"><span class="comment">#查看系统当前挂载信息,发现/dev/sdb相关信息消失</span></span><br><span class="line">mount -l | <span class="built_in">tail</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#尝试对/dev/sdb5进行只读挂载</span></span><br><span class="line">mount -o ro /dev/sdb5 /opt/sdb</span><br><span class="line"><span class="comment">#查看当前挂载信息</span></span><br><span class="line">mount -l | <span class="built_in">tail</span>  </span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/mount_l2.JPG"/>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#检测/dev/sdb5的权限</span></span><br><span class="line"><span class="built_in">cd</span> /opt/sdb5</span><br><span class="line"><span class="built_in">touch</span> test.txt</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/mount_l2_1.JPG"/>
+
+<p><strong>自动挂载</strong>  </p>
+<ul>
+<li>&#x2F;etc&#x2F;fstab文件<br>设备  挂载点  文件系统  权限  备份  检测<br><u>权限</u><br>  auto：系统自动挂载，fstab默认就是这个选项<br>  defaults：rw、suid、dev、exec、auto、nouser、async<br>  noauto：开机不自动挂载<br>  nouser：只有超级用户可以挂载<br>  ro：按只读权限挂载<br>  rw：按可读可写权限挂载<br>  user：任何用户都可以挂载<br><u>备份</u><br>  1：允许dump备份程序备份<br>  0：忽略备份操作<br><u>fsck磁盘检测设置</u><br>  0：永远不检测<br>  &#x2F;目录分区永远都是1<br>  2：其他分区从2开始，数字越小越先检查，如果两个分区的数字相同，则同时检查</li>
+</ul>
+<p><strong>练习</strong>   </p>
+<ul>
+<li>自动挂载一下分区</li>
+<li>主分区 格式化ext4 &#x2F;opt&#x2F;sdb1  </li>
+<li>扩展分区中的两个逻辑驱动器 格式化为xfs ext3  &#x2F;opt&#x2F;sdb[5-6]   </li>
+<li>交换分区 swap</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看以下当前交换分区的大小</span></span><br><span class="line">free -m</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/freem3.JPG"/>
+
+<p><font color=blue>想要设备文件的挂载永久生效，就需要把挂载的信息写入配置文件&#x2F;etv&#x2F;fstab。</font></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/fstab</span><br><span class="line"><span class="comment">#添加以下内容到/etc/fstab文件中</span></span><br><span class="line"><span class="comment">#/dev/sdb</span></span><br><span class="line">/dev/sdb1  /opt/sdb1  ext4  defaults  0 0</span><br><span class="line">/dev/sdb5  /opt/sdb5  xfs   ro        0 0</span><br><span class="line">/dev/sdb6  /opt/sdb6  ext3  rw        0 0</span><br><span class="line">/dev/sdb7  swap       swap  defaults  0 0</span><br><span class="line"><span class="comment">#挂载</span></span><br><span class="line">mount -a</span><br><span class="line"><span class="comment">#查看挂载系统当前挂载信息,主分区和两个逻辑分区都挂载成功</span></span><br><span class="line">mount -l</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/automountresult.JPG"/>  
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用设备名（/dev/sdb[number]）的方式挂载可能会出现找不到设备而加载失败的问题。uuid作为系统中存储设备提供的唯一标志字符串，使用UUID则不会出现这样的情况   </span></span><br><span class="line"><span class="comment">#查看uuid的3种方法   </span></span><br><span class="line">blkid</span><br><span class="line">lsblk</span><br><span class="line">ll /dev/disk/by-uuid</span><br><span class="line"><span class="comment">#也就是说，将上述/dev/sdb1换成其对应的uuid，其他的不变</span></span><br></pre></td></tr></table></figure>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/uuid1.JPG"/>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/uuid2.JPG"/>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/uuid3.JPG"/>
+
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看当前交换分区大小，Swap分区大小没有变化，mount -a不能挂载swap分区</span></span><br><span class="line">free -m</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">&lt;img src=<span class="string">&quot;https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/freem1.JPG&quot;</span>/&gt;  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line"><span class="comment">#swap分区的挂载方式</span></span><br><span class="line">swapon -a  <span class="comment">#会自动读取/etc/fstab文件中的分区挂载信息</span></span><br><span class="line"><span class="comment">#也可以通过查看交换分区的大小,相比之前，Swap大小增加了1G</span></span><br><span class="line">free -m</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/freem2.JPG"/>
+
+
+<h2 id="另外两个命令df、du"><a href="#另外两个命令df、du" class="headerlink" title="另外两个命令df、du"></a>另外两个命令df、du</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#df命令用于显示目前在Linux系统上的文件系统的磁盘使用情况统计</span></span><br><span class="line"><span class="built_in">df</span> -Th</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/dfTh.JPG"/>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#du查看文件大小</span></span><br><span class="line"><span class="built_in">du</span> -h /addfirst/reference/mouse/index/bowtie2-build-index/genome.1.bt2    </span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/duh.JPG"/>
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#du -sh查看文件夹大小</span></span><br><span class="line"><span class="built_in">du</span> -sh /addfirst/reference/</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/dush.JPG"/>   
+
+<h2 id="卸载分区（以-x2F-dev-x2F-sdb为例）"><a href="#卸载分区（以-x2F-dev-x2F-sdb为例）" class="headerlink" title="卸载分区（以&#x2F;dev&#x2F;sdb为例）"></a>卸载分区（以&#x2F;dev&#x2F;sdb为例）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看当前分区情况</span></span><br><span class="line"><span class="built_in">df</span> -lh</span><br><span class="line"><span class="comment">#卸载/dev/sdb5分区，但是重启后又会恢复到挂载状态</span></span><br><span class="line">umount /dev/sdb5</span><br><span class="line"><span class="comment">#查看当前分区情况，可以看到/dev/sdb5分区消失</span></span><br><span class="line"><span class="built_in">df</span> -lh</span><br><span class="line"><span class="comment">#卸载了还可以再挂载，数据都还在</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="删除分区"><a href="#删除分区" class="headerlink" title="删除分区"></a>删除分区</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk /dev/sdb</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/deletepartition.JPG"/>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看/dev/sdb的分区信息</span></span><br><span class="line">fdisk -l /dev/sdb</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/deletedevsdbinfo.JPG"/>
+
+<h2 id="磁盘卸载"><a href="#磁盘卸载" class="headerlink" title="磁盘卸载"></a>磁盘卸载</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#删除掉配置文件/etc/fstab中/dev/sdb的相关信息</span></span><br><span class="line">vim /etc/fstab</span><br><span class="line">reboot</span><br><span class="line"><span class="comment">#重启后查看是否卸载</span></span><br><span class="line"><span class="built_in">df</span> -lh</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/permanentlydelete.JPG"/>
+
+<p>😄然后关机，就可以删掉相应的硬盘，重新开机后一切正常。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://www.linuxprobe.com/chapter-06.html">https://www.linuxprobe.com/chapter-06.html</a><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av76344853?p=36">https://www.bilibili.com/video/av76344853?p=36</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/maohai-kdg/p/12067101.html">https://www.cnblogs.com/maohai-kdg/p/12067101.html</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>磁盘管理 （分区、格式化、挂载、卸载）</p><p><a href="http://gyqgyq.com/磁盘管理/">http://gyqgyq.com/磁盘管理/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>Gong Yuqi</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-02-08</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-11-26</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Linux/">Linux</a></div><div class="a2a_kit a2a_kit_size_32 a2a_default_style"><a class="a2a_dd" target="_blank" rel="noopener" href="https://www.addtoany.com/share"></a><a class="a2a_button_facebook"></a><a class="a2a_button_twitter"></a><a class="a2a_button_telegram"></a><a class="a2a_button_whatsapp"></a><a class="a2a_button_reddit"></a></div><script src="https://static.addtoany.com/menu/page.js" defer></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/scRNA-seq%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">scRNA-seq数据分析实战（二）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/scRNA-seq/"><span class="level-item">scRNA-seq数据分析流程</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/ava.jpg" alt="Gong Yuqi"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Gong Yuqi</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HangZhou, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">37</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Category</p><a href="/categories"><p class="title">1</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">7</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/gongyuqiqi" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/gongyuqiqi"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Dribbble" href="https://dribbble.com"><i class="fab fa-dribbble"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#磁盘管理-（分区、格式化、挂载、卸载）"><span class="level-left"><span class="level-item">1</span><span class="level-item">磁盘管理 （分区、格式化、挂载、卸载）</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#磁盘结构"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">磁盘结构</span></span></a></li><li><a class="level is-mobile" href="#磁盘表示"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">磁盘表示</span></span></a></li><li><a class="level is-mobile" href="#磁盘使用概述"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">磁盘使用概述</span></span></a></li><li><a class="level is-mobile" href="#磁盘分区"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">磁盘分区</span></span></a></li><li><a class="level is-mobile" href="#磁盘格式化"><span class="level-left"><span class="level-item">1.5</span><span class="level-item">磁盘格式化</span></span></a></li><li><a class="level is-mobile" href="#磁盘挂载"><span class="level-left"><span class="level-item">1.6</span><span class="level-item">磁盘挂载</span></span></a></li><li><a class="level is-mobile" href="#另外两个命令df、du"><span class="level-left"><span class="level-item">1.7</span><span class="level-item">另外两个命令df、du</span></span></a></li><li><a class="level is-mobile" href="#卸载分区（以-x2F-dev-x2F-sdb为例）"><span class="level-left"><span class="level-item">1.8</span><span class="level-item">卸载分区（以/dev/sdb为例）</span></span></a></li><li><a class="level is-mobile" href="#删除分区"><span class="level-left"><span class="level-item">1.9</span><span class="level-item">删除分区</span></span></a></li><li><a class="level is-mobile" href="#磁盘卸载"><span class="level-left"><span class="level-item">1.10</span><span class="level-item">磁盘卸载</span></span></a></li><li><a class="level is-mobile" href="#参考资料"><span class="level-left"><span class="level-item">1.11</span><span class="level-item">参考资料</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">Categories</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Programming-Language/"><span class="level-start"><span class="level-item">Programming Language</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-07-04T05:48:30.000Z">2021-07-04</time></p><p class="title"><a href="/RNA-TNBC/">RNA-TNBC</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-06-29T06:01:05.000Z">2021-06-29</time></p><p class="title"><a href="/scRNA-TNBC/">scRNA-TNBC</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-06-03T04:43:57.000Z">2021-06-03</time></p><p class="title"><a href="/MeRIP-Seq/">MeRIP-Seq</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-05-14T05:37:00.000Z">2021-05-14</time></p><p class="title"><a href="/WES/">WES</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-05-13T06:08:18.000Z">2021-05-13</time></p><p class="title"><a href="/scRNA-seq-%E6%95%B0%E6%8D%AE%E5%A4%8D%E7%8E%B0/">scRNA-seq_数据复现</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">Archives</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2021/07/"><span class="level-start"><span class="level-item">July 2021</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/06/"><span class="level-start"><span class="level-item">June 2021</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/05/"><span class="level-start"><span class="level-item">May 2021</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/03/"><span class="level-start"><span class="level-item">March 2021</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/02/"><span class="level-start"><span class="level-item">February 2021</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/01/"><span class="level-start"><span class="level-item">January 2021</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/12/"><span class="level-start"><span class="level-item">December 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/05/"><span class="level-start"><span class="level-item">May 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/04/"><span class="level-start"><span class="level-item">April 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/03/"><span class="level-start"><span class="level-item">March 2020</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/02/"><span class="level-start"><span class="level-item">February 2020</span></span><span class="level-end"><span class="level-item tag">18</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">Tags</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">7</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MySQL/"><span class="tag">MySQL</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/NGS/"><span class="tag">NGS</span><span class="tag">18</span></a></div><div class="control"><a class="tags has-addons" href="/tags/R/"><span class="tag">R</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/System/"><span class="tag">System</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/notes/"><span class="tag">notes</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/tag1/"><span class="tag">tag1</span><span class="tag">6</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">follow.it</h3><form action="" method="post" target="_blank"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/ava.jpg" alt="Gong Yuqi&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2022 Gong Yuqi</span>  Powered by Gong Yuqi <i class="fa-heart fa fa-beat" style="color: #f00;"></i> Coding Spirit<br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/gongyuqiqi/gongyuqiqi.github.io"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

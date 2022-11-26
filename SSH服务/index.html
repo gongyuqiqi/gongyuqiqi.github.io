@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>SSH服务 - Gong Yuqi&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Gong Yuqi&#039;s blog"><meta name="msapplication-TileImage" content="/img/ava.jpg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gong Yuqi&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="远程控制服务：配置sshd服务、 安全密钥验证、远程传输命令不间断会话服务：管理远程会话、会话共享功能"><meta property="og:type" content="blog"><meta property="og:title" content="SSH服务"><meta property="og:url" content="http://gyqgyq.com/SSH%E6%9C%8D%E5%8A%A1/"><meta property="og:site_name" content="Gong Yuqi&#039;s blog"><meta property="og:description" content="远程控制服务：配置sshd服务、 安全密钥验证、远程传输命令不间断会话服务：管理远程会话、会话共享功能"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_yes.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/beforemodification.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/modification.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_no_without_systemctl_restart_sshd.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_no.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ssh-keygen.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/sshkeygenfile.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ssh-copy-id.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/cat_root_.ssh_authorized_key.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ssh116.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/server_passwordauthentication_yes.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/server_passwordauthentication_no.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/xshell116with_sysytemctl___.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/scptest.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/scpservertohost.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/catfromserver.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/screenTEST1.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/screenTEST2.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/vim.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/screen-r10777.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/vim.JPG"><meta property="og:image" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/synchronization.JPG"><meta property="article:published_time" content="2020-02-24T08:30:23.000Z"><meta property="article:modified_time" content="2022-11-26T06:08:08.861Z"><meta property="article:author" content="Gong Yuqi"><meta property="article:tag" content="Linux"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_yes.JPG"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://gyqgyq.com/SSH%E6%9C%8D%E5%8A%A1/"},"headline":"SSH服务","image":[],"datePublished":"2020-02-24T08:30:23.000Z","dateModified":"2022-11-26T06:08:08.861Z","author":{"@type":"Person","name":"Gong Yuqi"},"publisher":{"@type":"Organization","name":"Gong Yuqi's blog","logo":{"@type":"ImageObject","url":"http://gyqgyq.com/img/ava.jpg"}},"description":"远程控制服务：配置sshd服务、 安全密钥验证、远程传输命令不间断会话服务：管理远程会话、会话共享功能"}</script><link rel="canonical" href="http://gyqgyq.com/SSH%E6%9C%8D%E5%8A%A1/"><link rel="icon" href="/img/ava.jpg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/ava.jpg" alt="Gong Yuqi&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/gongyuqiqi/gongyuqiqi.github.io"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2020-02-24T08:30:23.000Z" title="2/24/2020, 4:30:23 PM">2020-02-24</time></span><span class="level-item">Updated&nbsp;<time dateTime="2022-11-26T06:08:08.861Z" title="11/26/2022, 2:08:08 PM">2022-11-26</time></span><span class="level-item">9 minutes read (About 1333 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><h1 class="title is-3 is-size-4-mobile">SSH服务</h1><div class="content"><p>远程控制服务：配置sshd服务、 安全密钥验证、远程传输命令<br>不间断会话服务：管理远程会话、会话共享功能</p>
+<span id="more"></span>
+
+<h1 id="远程控制服务"><a href="#远程控制服务" class="headerlink" title="远程控制服务"></a>远程控制服务</h1><ul>
+<li>linux中一切皆是文件，配置服务即是对配置文件进行修改</li>
+<li>主配置文件：最重要的配置文件<br>一般情况下在&#x2F;etc&#x2F;服务名称&#x2F;服务名称.config  </li>
+<li>普通文件：主要被调用，常规参数</li>
+</ul>
+<h2 id="（一）配置sshd服务"><a href="#（一）配置sshd服务" class="headerlink" title="（一）配置sshd服务"></a>（一）配置sshd服务</h2><p><strong>想要使用SSH协议来远程管理Linux系统，则需要部署配置sshd服务程序。</strong></p>
+<blockquote>
+<p>一般的服务程序并不会在配置文件修改之后立即获得最新的参数。如果想让新配置文件生效，则需要手动<strong>重启相应的服务程序</strong>。最好也<strong>将这个服务程序加入到开机启动项</strong>中，这样系统在下一次启动时，该服务程序便会自动运行，继续为用户提供服务。  </p>
+</blockquote>
+<ol>
+<li>查看主配置文件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Xshell远程登陆服务器,此时是需要密码验证的。</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh <span class="number">192.168</span>.12.136</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_yes.JPG"/>
+
+
+
+<ol start="3">
+<li>修改主配置文件内容如下，使得不可以通过root用户方式远程登陆服务器。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/beforemodification.JPG"/>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/modification.JPG"/>
+
+<ol start="4">
+<li>在此远程连接服务器，发现依然可以通过root用户方式远程登陆服务器。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh 192.168.12.64</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_no_without_systemctl_restart_sshd.JPG"/>
+
+
+<ol start="5">
+<li><strong>重启服务</strong></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#这里以sshd服务为例</span></span><br><span class="line">systemctl restart sshd</span><br><span class="line">systemctl <span class="built_in">enable</span> sshd</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>再次进行远程登陆</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh <span class="number">192.168</span>.12.64</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/PermitRootLogin_no.JPG"/>
+
+<p>每次输入密码后，会再次弹出界面框要求输入密码，进入死循环。。。。。。</p>
+<h2 id="（二）安全密钥验证"><a href="#（二）安全密钥验证" class="headerlink" title="（二）安全密钥验证"></a>（二）安全密钥验证</h2><ol>
+<li>客户端主机中生成“密钥对”</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ssh-keygen.JPG"/>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/sshkeygenfile.JPG"/>
+
+
+<ol start="2">
+<li>把客户端主机生成的<strong>公钥文件</strong>传送至远程主机</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id 116.63.129.7</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ssh-copy-id.JPG"/>
+
+<ol start="3">
+<li>查看服务器端认证的文件</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /root/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/cat_root_.ssh_authorized_key.JPG"/>
+
+<ol start="4">
+<li>客户端登陆服务端</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh 116.63.129.7</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/ssh116.JPG"/>
+
+<p>此时就会发现，客户端远程访问服务器就<strong>不需要密码</strong>登陆了。因为密钥的优先级是高于密码的。这样是不是很方便呢？嘿嘿😁 </p>
+<p>而且，<strong>密钥方式登陆</strong>更安全哦！😊</p>
+<ol start="5">
+<li>修改<strong>服务器端配置文件</strong>，使其只支持密钥方式登陆</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注意啦，一定要是服务器端的配置文件</span></span><br><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/server_passwordauthentication_yes.JPG"/>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/server_passwordauthentication_no.JPG"/>
+
+<ol start="6">
+<li>重启相应服务</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>Xshell远程登陆服务器（验证）</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh 116.63.129.7</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/xshell116with_sysytemctl___.JPG"/>
+
+<p>登陆界面默认无法输入密码！</p>
+<p><strong>注意啦，有对应私钥的客户端无需密码即可登陆拥有对应公钥的服务端</strong></p>
+<h2 id="远程传输命令"><a href="#远程传输命令" class="headerlink" title="远程传输命令"></a>远程传输命令</h2><p>scp（secure copy）是一个基于SSH协议在网络之间进行安全传输的命令。</p>
+<ol>
+<li>将客户端文件传给服务器端</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#一下操作在客户端进行</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;this is a test about scp&quot;</span>&gt;scptest</span><br><span class="line">scp /root/scptest 116.63.129.7:/home</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>进入服务器端进行查看</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /home/scptest</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/scptest.JPG"/>
+
+
+<ol start="3">
+<li>将服务器端文件传给客户端</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下操作在服务器端进行</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;This is the message from server&quot;</span>&gt;fromserver</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>进入客户端进行文件下载和查看</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp 116.63.129.7:home/fromserver /root</span><br><span class="line"><span class="built_in">cat</span> /root/fromserver</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/scpservertohost.JPG"/>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/catfromserver.JPG"/>
+
+
+<h1 id="不间断会话服务"><a href="#不间断会话服务" class="headerlink" title="不间断会话服务"></a>不间断会话服务</h1><p><strong><a target="_blank" rel="noopener" href="https://www.linuxprobe.com/chapter-09.html#92">首先配置yum仓库</a></strong></p>
+<h2 id="管理远程会话"><a href="#管理远程会话" class="headerlink" title="管理远程会话"></a>管理远程会话</h2><p>screen命令能做的事情非常多：可以用-S参数创建会话窗口；用-d参数将指定会话进行离线处理；用-r参数恢复指定会话；用-x参数一次性恢复所有的会话；用-ls参数显示当前已有的会话；以及用-wipe参数把目前无法使用的会话删除</p>
+<ol>
+<li>screen服务介绍</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建一个会话框test</span></span><br><span class="line">screen -S <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看系统当前的会话</span></span><br><span class="line">screen -<span class="built_in">ls</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#退出当前会话</span></span><br><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>screen实战一</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建TEST会话框,会发现屏幕闪跳了以下</span></span><br><span class="line">screen -S TEST</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span></span><br><span class="line"><span class="built_in">cd</span> /bin</span><br><span class="line"><span class="built_in">cd</span> /roo/biosoft</span><br><span class="line"><span class="built_in">ls</span></span><br></pre></td></tr></table></figure>
+<p>当前界面如下<br><img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/screenTEST1.JPG"/></p>
+<p>此时将终端kill掉，模拟远程连接过程中网络出错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">screen -<span class="built_in">ls</span></span><br><span class="line">screen -r TEST <span class="comment">#恢复离线的对话框</span></span><br></pre></td></tr></table></figure>
+
+<p>此时就会恢复到上一次发生事故时的界面</p>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/screenTEST2.JPG"/>
+
+<ol start="3">
+<li>screen实战二</li>
+</ol>
+<p>有时候在编辑文件时，文件内容还未及时保存，远程连接出现问题。这个时候screen服务就会🌟发光发热🔥</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">screen vim test.txt</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/vim.JPG"/>
+
+<p>此时将终端kill掉，模拟远程连接过程中网络出错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">screen -<span class="built_in">ls</span></span><br><span class="line">screen -r 10777</span><br></pre></td></tr></table></figure>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/screen-r10777.JPG"/>
+
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/vim.JPG"/>
+
+<h2 id="会话共享功能"><a href="#会话共享功能" class="headerlink" title="会话共享功能"></a>会话共享功能</h2><ol>
+<li><p>终端A远程连接服务器+创建会话</p>
+<p>ssh服务将终端A远程连接到服务器（这里假装连接了，其实就是连接到本地的虚拟机，为了方便展示）</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#连接</span></span><br><span class="line">ssh 192.168.12.136</span><br><span class="line"><span class="comment">#创建会话框</span></span><br><span class="line">screen -S <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>终端B远程连接服务器+同步</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh 192.168.12.136</span><br><span class="line">screen -x</span><br></pre></td></tr></table></figure>
+<p>此后，终端A和终端B就同步画面啦</p>
+<img src="https://blog-image-host.oss-cn-shanghai.aliyuncs.com/gyqblog/synchronization.JPG"/>
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xiaochina/p/5802008.html">ssh配置文件ssh_config和sshd_config区别</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.linuxprobe.com/chapter-09.html#92">远程控制服务_文字版</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av71365003?p=12">远程控制服务_视频版</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>SSH服务</p><p><a href="http://gyqgyq.com/SSH服务/">http://gyqgyq.com/SSH服务/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>Gong Yuqi</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-02-24</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-11-26</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Linux/">Linux</a></div><div class="a2a_kit a2a_kit_size_32 a2a_default_style"><a class="a2a_dd" target="_blank" rel="noopener" href="https://www.addtoany.com/share"></a><a class="a2a_button_facebook"></a><a class="a2a_button_twitter"></a><a class="a2a_button_telegram"></a><a class="a2a_button_whatsapp"></a><a class="a2a_button_reddit"></a></div><script src="https://static.addtoany.com/menu/page.js" defer></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/MySQL%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">MySQL简单介绍</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/RNA-seq%20analysis/"><span class="level-item">RNA-seq数据分析流程</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/ava.jpg" alt="Gong Yuqi"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Gong Yuqi</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HangZhou, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">37</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Category</p><a href="/categories"><p class="title">1</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">7</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/gongyuqiqi" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/gongyuqiqi"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Dribbble" href="https://dribbble.com"><i class="fab fa-dribbble"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#远程控制服务"><span class="level-left"><span class="level-item">1</span><span class="level-item">远程控制服务</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#（一）配置sshd服务"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">（一）配置sshd服务</span></span></a></li><li><a class="level is-mobile" href="#（二）安全密钥验证"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">（二）安全密钥验证</span></span></a></li><li><a class="level is-mobile" href="#远程传输命令"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">远程传输命令</span></span></a></li></ul></li><li><a class="level is-mobile" href="#不间断会话服务"><span class="level-left"><span class="level-item">2</span><span class="level-item">不间断会话服务</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#管理远程会话"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">管理远程会话</span></span></a></li><li><a class="level is-mobile" href="#会话共享功能"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">会话共享功能</span></span></a></li><li><a class="level is-mobile" href="#参考资料"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">参考资料</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">Categories</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Programming-Language/"><span class="level-start"><span class="level-item">Programming Language</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-07-04T05:48:30.000Z">2021-07-04</time></p><p class="title"><a href="/RNA-TNBC/">RNA-TNBC</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-06-29T06:01:05.000Z">2021-06-29</time></p><p class="title"><a href="/scRNA-TNBC/">scRNA-TNBC</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-06-03T04:43:57.000Z">2021-06-03</time></p><p class="title"><a href="/MeRIP-Seq/">MeRIP-Seq</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-05-14T05:37:00.000Z">2021-05-14</time></p><p class="title"><a href="/WES/">WES</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-05-13T06:08:18.000Z">2021-05-13</time></p><p class="title"><a href="/scRNA-seq-%E6%95%B0%E6%8D%AE%E5%A4%8D%E7%8E%B0/">scRNA-seq_数据复现</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">Archives</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2021/07/"><span class="level-start"><span class="level-item">July 2021</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/06/"><span class="level-start"><span class="level-item">June 2021</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/05/"><span class="level-start"><span class="level-item">May 2021</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/03/"><span class="level-start"><span class="level-item">March 2021</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/02/"><span class="level-start"><span class="level-item">February 2021</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/01/"><span class="level-start"><span class="level-item">January 2021</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/12/"><span class="level-start"><span class="level-item">December 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/05/"><span class="level-start"><span class="level-item">May 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/04/"><span class="level-start"><span class="level-item">April 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/03/"><span class="level-start"><span class="level-item">March 2020</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/02/"><span class="level-start"><span class="level-item">February 2020</span></span><span class="level-end"><span class="level-item tag">18</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">Tags</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">7</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MySQL/"><span class="tag">MySQL</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/NGS/"><span class="tag">NGS</span><span class="tag">18</span></a></div><div class="control"><a class="tags has-addons" href="/tags/R/"><span class="tag">R</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/System/"><span class="tag">System</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/notes/"><span class="tag">notes</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/tag1/"><span class="tag">tag1</span><span class="tag">6</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">follow.it</h3><form action="" method="post" target="_blank"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/ava.jpg" alt="Gong Yuqi&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2022 Gong Yuqi</span>  Powered by Gong Yuqi <i class="fa-heart fa fa-beat" style="color: #f00;"></i> Coding Spirit<br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/gongyuqiqi/gongyuqiqi.github.io"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
